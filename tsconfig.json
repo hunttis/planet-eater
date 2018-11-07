@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "allowJs": true,
+    "baseUrl": ".",
+    "module": "esnext",
+    "lib": ["dom", "es2018", "scripthost"],
+    "moduleResolution": "node",
+    "paths": {
+      "~/*": ["./src/*"]
+    }
+  },
+  "include": ["./src/**/*.ts"]
+}
