@@ -3317,6 +3317,20 @@ pbkdf2@^3.0.3:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+phaser-plugin-game-scale@^1.2.1:
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/phaser-plugin-game-scale/-/phaser-plugin-game-scale-1.2.1.tgz#871a5a83c21c1478ea36af9855e5985f4608d020"
+  integrity sha512-GQHCEaufJVmrqTnGm7Dmnc4FG1tbreUETgrNINZNpIC2vo15wfUwBeyBp+jYrCZ4XRwr1J2eoNHdBnzUDTeamA==
+  dependencies:
+    phaser "^3.12.0"
+
+phaser@^3.12.0:
+  version "3.15.1"
+  resolved "https://registry.yarnpkg.com/phaser/-/phaser-3.15.1.tgz#17d41fb5b310fb062952e29d9bb26a99c90d3a44"
+  integrity sha512-K2IaBziSW6OFyIkIFyJgBSi+kL1yip3gbL6TBsjzesJqLxP3o5+NwfPf6fqrQ4yxBYbbuKP2da5lsh5LFw7jXA==
+  dependencies:
+    eventemitter3 "^3.1.0"
+
 phaser@^3.14.0:
   version "3.14.0"
   resolved "https://registry.yarnpkg.com/phaser/-/phaser-3.14.0.tgz#af1fb05a1febad9bfef402f3987e0b4340d7abd2"
