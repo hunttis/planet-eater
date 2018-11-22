@@ -27,17 +27,17 @@ class InitScene extends Scene {
   }
 }
 
-const gameScalePgin: PluginObject = { 
+const gameScalePgin: PluginObject = {
   global: [{
     key: 'GameScalePlugin',
     plugin: GameScalePlugin,
     mapping: 'gameScale',
-    data: {/* See 'Configuration'*/}
+    data: {/* See 'Configuration'*/ }
   }]
 }
 
 const config: GameConfig = {
-  type: AUTO,  
+  type: AUTO,
   width: 800,
   height: 400,
   parent: 'game-container',
@@ -49,11 +49,17 @@ const config: GameConfig = {
     impact: {
       gravity: 400
     }
-    
+
   },
   scene: [InitScene, MenuScene, GameScene],
   plugins: gameScalePgin,
 };
+
+if (module.hot) {
+  module.hot.dispose(function () {
+    window.location.reload();
+  });
+}
 
 const gameContainer = document.getElementById(config.parent as string)!;
 const game = new Game(config);
