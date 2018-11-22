@@ -14,12 +14,13 @@ export class GameScene extends Scene {
   tileCursor!: GameObjects.Sprite;
   cannons: Array<Cannon> = [];
   ammo!: GameObjects.Group;
+  enemyAmmo!: GameObjects.Group;
   enemies!: GameObjects.Group;
 
   enemyCooldown: number = 1000;
 
   starCount: number = 10;
-  particles: GameObjects.Particles.ParticleEmitterManager;
+  particles!: GameObjects.Particles.ParticleEmitterManager;
 
   constructor() {
     super('GameScene');
@@ -43,6 +44,7 @@ export class GameScene extends Scene {
     this.ammo = this.add.group();
     this.enemies = this.add.group();
     this.particles = this.add.particles('star');
+    this.enemyAmmo = this.add.group();
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -93,7 +95,7 @@ export class GameScene extends Scene {
   }
 
   createEnemy() {
-    const enemy: Fighter = new Fighter(this, 0, 0);
+    const enemy: Fighter = new Fighter(this, 0, 0, this.enemyAmmo);
     Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
     this.enemies.add(enemy, true);
   }
@@ -119,6 +121,9 @@ export class GameScene extends Scene {
 
   updateAmmos() {
     this.ammo.getChildren().forEach(shot => {
+      shot.update()
+    })
+    this.enemyAmmo.getChildren().forEach(shot => {
       shot.update()
     })
   }

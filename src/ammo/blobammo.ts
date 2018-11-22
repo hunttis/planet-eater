@@ -1,4 +1,4 @@
-import { Ammo } from './Ammo';
+import { Ammo } from './ammo';
 
 export class BlobAmmo extends Ammo {
   speed: number = 5;
