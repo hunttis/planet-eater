@@ -2,6 +2,7 @@ import { Scene, GameObjects, Input } from 'phaser';
 import { Cannon } from './cannons/cannon';
 import { BlobCannon } from './cannons/blobcannon';
 import { Ammo } from './ammo/ammo'
+import { Fighter } from './enemies/fighter';
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -13,7 +14,7 @@ export class GameScene extends Scene {
   tileCursor!: GameObjects.Sprite;
   cannons: Array<Cannon> = [];
   ammo!: GameObjects.Group;
-  enemies: Array<GameObjects.Sprite> = [];
+  enemies!: GameObjects.Group;
   builtSpots: Array<Phaser.Geom.Point> = [];
 
   enemyCooldown: number = 1000;
@@ -40,6 +41,7 @@ export class GameScene extends Scene {
     this.tileCursor = this.add.sprite(0, 0, 'cursor', 0);
     this.tileCursor.setOrigin(0, 0);
     this.ammo = this.add.group();
+    this.enemies = this.add.group();
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -81,9 +83,9 @@ export class GameScene extends Scene {
   }
 
   createEnemy() {
-    const enemy: GameObjects.Sprite = this.add.sprite(0, 0, 'cannons', 1);
+    const enemy: Fighter = new Fighter(this, 0, 0);
     Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
-    this.enemies.push(enemy);
+    this.enemies.add(enemy, true);
   }
 
   checkCannons() {
@@ -92,11 +94,11 @@ export class GameScene extends Scene {
       cannon.update();
       let closestEnemy: GameObjects.Sprite | null = null;
       let closestDistance: number = 100000;
-      this.enemies.forEach(enemy => {
-        const distance = Phaser.Math.Distance.Between(cannon.x, cannon.y, enemy.x, enemy.y)
+      this.enemies.getChildren().forEach(enemy => {
+        const distance = Phaser.Math.Distance.Between(cannon.x, cannon.y, enemy.x as number, enemy.y as number)
         if (closestDistance > distance) {
           closestDistance = distance;
-          closestEnemy = enemy;
+          closestEnemy = enemy as GameObjects.Sprite;
         }
       })
       if (closestEnemy !== null) {
@@ -130,12 +132,8 @@ export class GameScene extends Scene {
       this.enemyCooldown = 2000;
       this.createEnemy();
     }
-    this.enemies.forEach(enemy => {
-      enemy.x -= 2;
-
-      if (enemy.x < -10) {
-        enemy.destroy();
-      }
+    this.enemies.getChildren().forEach(enemy => {
+      enemy.update();
     })
 
     this.checkCannons();
