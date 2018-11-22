@@ -1,12 +1,13 @@
 import { GameObjects } from "phaser";
 import { Ammo } from '../ammo/ammo';
+import { Enemy } from "~/enemies/enemy";
 
 export class Cannon extends GameObjects.Sprite {
 
-  target: GameObjects.Sprite | null = null;
+  target: Enemy | null = null;
   ammo!: GameObjects.Group;
 
-  targetEnemy(closestEnemy: GameObjects.Sprite, distance: number): any {
+  targetEnemy(closestEnemy: Enemy, distance: number): any {
     if (this.target === null || !this.target.active) {
       this.target = closestEnemy;
       console.log('Took target!');
