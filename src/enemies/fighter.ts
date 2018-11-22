@@ -54,7 +54,7 @@ export class Fighter extends Enemy {
   fire(): void {
     this.cooldown = this.originalCooldownValue;
     const direction = new Phaser.Math.Vector2(-1, 0);
-    const shot = new FighterAmmo(this.scene, this.x - 10, this.y - 10, direction);
+    const shot = new FighterAmmo(this.scene, this.x, this.getCenter().y, direction);
     this.ammo.add(shot, true);
   }
 

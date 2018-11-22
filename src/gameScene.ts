@@ -1,4 +1,4 @@
-import { Scene, GameObjects, Input } from 'phaser';
+import { Scene, GameObjects, Input, Tilemaps } from 'phaser';
 import { Cannon } from './cannons/cannon';
 import { BlobCannon } from './cannons/blobcannon';
 import { Ammo } from './ammo/ammo'
@@ -135,9 +135,7 @@ export class GameScene extends Scene {
   destroyTileAtXY(x: number, y: number) {
     const tile = this.blobMap.getTileAtWorldXY(x, y)
 
-    console.log(x, y, tile.x, tile.y, tile.pixelX, tile.pixelY);
     this.cannons.forEach(cannon => {
-      console.log(cannon.x, cannon.y);
       if (cannon.x === tile.pixelX + 8 && cannon.y === tile.pixelY + 8) {
         cannon.destroy()
       }
@@ -151,6 +149,14 @@ export class GameScene extends Scene {
       scale: { start: 2, end: 0 },
       frequency: 100
     })
+  }
+
+  getCannonOnTile(tile: Tilemaps.Tile) {
+    for (const cannon of this.cannons) {
+      if (cannon.x === tile.pixelX + 8 && cannon.y === tile.pixelY + 8) {
+        return cannon;
+      }
+    }
   }
 
   explodeEffect(x: number, y: number, quantity: number = 100, lifespan: number = 200, tint: number = 0xdddd00) {
@@ -191,5 +197,7 @@ export class GameScene extends Scene {
 
     this.checkCannons();
     this.updateAmmos();
+
+    this.cannons = this.cannons.filter(cannon => cannon.active);
   }
 }
