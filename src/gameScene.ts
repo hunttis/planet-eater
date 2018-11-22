@@ -107,6 +107,12 @@ export class GameScene extends Scene {
     })
   }
 
+  updateAmmos() {
+    this.ammo.getChildren().forEach(shot => {
+      shot.update()
+    })
+  }
+
   update() {
 
     for (let i = 0; i < 10; i++) {
@@ -137,6 +143,6 @@ export class GameScene extends Scene {
     })
 
     this.checkCannons();
-
+    this.updateAmmos();
   }
 }

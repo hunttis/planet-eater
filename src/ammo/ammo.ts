@@ -1,15 +1,16 @@
 import { GameObjects, Scene } from "phaser";
+import { Enemy } from "~/enemies/enemy";
 
 export class Ammo extends GameObjects.Sprite {
 
-  target: GameObjects.Sprite | null = null;
+  target: Enemy;
 
-  constructor(scene: Scene, x: number, y: number, target: GameObjects.Sprite) {
+  constructor(scene: Scene, x: number, y: number, target: Enemy) {
     super(scene, x, y, 'cannons', 0);
     this.target = target;
   }
 
-  targetEnemy(closestEnemy: GameObjects.Sprite, distance: number): any {
+  targetEnemy(closestEnemy: Enemy, distance: number): any {
     if (this.target === null || !this.target.active) {
       this.target = closestEnemy;
     } else if (closestEnemy !== null && this.target !== closestEnemy && distance < this.distanceToTarget()) {
