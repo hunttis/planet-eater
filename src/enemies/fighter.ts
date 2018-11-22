@@ -15,6 +15,11 @@ export class Fighter extends Enemy {
 
   update() {
     super.update();
+
+    if (!this.active) {
+      return;
+    }
+
     this.x -= 2;
     this.y += this.ySpeed;
 
