@@ -15,7 +15,6 @@ export class GameScene extends Scene {
   cannons: Array<Cannon> = [];
   ammo!: GameObjects.Group;
   enemies!: GameObjects.Group;
-  builtSpots: Map<Object, Cannon> = new Map();
 
   enemyCooldown: number = 1000;
 
@@ -76,10 +75,15 @@ export class GameScene extends Scene {
     const cursorY = yLoc;
     const tileX = Math.floor(cursorX / 16) * 16 + 8;
     const tileY = Math.floor(cursorY / 16) * 16 + 8;
-    const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
-    this.add.existing(cannon);
-    this.cannons.push(cannon);
-    this.builtSpots.set({ x: tileX, y: tileY }, cannon);
+    const alreadyBuilt = this.cannons.filter(cannon => {
+      return cannon.x === tileX && cannon.y === tileY
+    }).length > 0
+
+    if (!alreadyBuilt) {
+      const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
+      this.add.existing(cannon);
+      this.cannons.push(cannon);
+    }
   }
 
   createEnemy() {
