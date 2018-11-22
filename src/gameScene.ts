@@ -15,7 +15,7 @@ export class GameScene extends Scene {
   cannons: Array<Cannon> = [];
   ammo!: GameObjects.Group;
   enemies!: GameObjects.Group;
-  builtSpots: Array<Phaser.Geom.Point> = [];
+  builtSpots: Map<Object, Cannon> = new Map();
 
   enemyCooldown: number = 1000;
 
@@ -53,7 +53,7 @@ export class GameScene extends Scene {
       map.tileHeight
     );
 
-    const layer = map.createStaticLayer('foreground', tileset, 0, 0);
+    const layer = map.createDynamicLayer('foreground', tileset, 0, 0);
     return map;
   }
 
@@ -76,10 +76,10 @@ export class GameScene extends Scene {
     const cursorY = yLoc;
     const tileX = Math.floor(cursorX / 16) * 16 + 8;
     const tileY = Math.floor(cursorY / 16) * 16 + 8;
-    this.add.sprite(tileX, tileY, 'cannons', 0); // cannon base
     const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
     this.add.existing(cannon);
     this.cannons.push(cannon);
+    this.builtSpots.set({ x: tileX, y: tileY }, cannon);
   }
 
   createEnemy() {
@@ -113,6 +113,24 @@ export class GameScene extends Scene {
     })
   }
 
+  getTileAtXY(x: number, y: number) {
+    return this.blobMap.getTileAtWorldXY(x, y)
+  }
+
+  destroyTileAtXY(x: number, y: number) {
+    const tile = this.blobMap.getTileAtWorldXY(x, y)
+
+    console.log(x, y, tile.x, tile.y, tile.pixelX, tile.pixelY);
+    this.cannons.forEach(cannon => {
+      console.log(cannon.x, cannon.y);
+      if (cannon.x === tile.pixelX + 8 && cannon.y === tile.pixelY + 8) {
+        cannon.destroy()
+      }
+    })
+
+    this.blobMap.removeTileAtWorldXY(x, y);
+  }
+
   update() {
 
     for (let i = 0; i < 10; i++) {
@@ -125,7 +143,7 @@ export class GameScene extends Scene {
 
     if (this.input.activePointer.justDown) {
       this.createCannon(this.input.activePointer.x, this.input.activePointer.y);
-      console.log('Tile: ', this.blobMap.getTileAtWorldXY(this.input.activePointer.x, this.input.activePointer.y));
+      console.log('Tile: ', this.getTileAtXY(this.input.activePointer.x, this.input.activePointer.y));
     }
 
     this.cannons.forEach(cannon => {

@@ -1,11 +1,14 @@
 import { GameObjects, Scene } from "phaser";
+import { GameScene } from "~/gameScene";
 
 export class Enemy extends GameObjects.Sprite {
 
   health: number = 100;
+  scene: GameScene;
 
-  constructor(scene: Scene, x: number, y: number) {
+  constructor(scene: GameScene, x: number, y: number) {
     super(scene, x, y, 'cannons', 1);
+    this.scene = scene;
     console.log('created');
   }
 

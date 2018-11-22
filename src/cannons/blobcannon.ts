@@ -14,6 +14,9 @@ export class BlobCannon extends Cannon {
 
   update() {
     super.update()
+    if (!this.active) {
+      return;
+    }
     this.cooldown -= this.scene.sys.game.loop.delta;
     if (this.target !== null && this.cooldown < 0) {
       this.fire()
