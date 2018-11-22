@@ -1,12 +1,15 @@
 import { GameObjects, Scene } from "phaser";
 import { Enemy } from "~/enemies/enemy";
+import { GameScene } from "~/gameScene";
 
 export class Ammo extends GameObjects.Sprite {
 
   target: Enemy;
+  scene: GameScene;
 
-  constructor(scene: Scene, x: number, y: number, target: Enemy) {
+  constructor(scene: GameScene, x: number, y: number, target: Enemy) {
     super(scene, x, y, 'cannons', 0);
+    this.scene = scene;
     this.target = target;
   }
 

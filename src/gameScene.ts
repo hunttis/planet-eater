@@ -19,6 +19,7 @@ export class GameScene extends Scene {
   enemyCooldown: number = 1000;
 
   starCount: number = 10;
+  particles: GameObjects.Particles.ParticleEmitterManager;
 
   constructor() {
     super('GameScene');
@@ -41,6 +42,7 @@ export class GameScene extends Scene {
     this.tileCursor.setOrigin(0, 0);
     this.ammo = this.add.group();
     this.enemies = this.add.group();
+    this.particles = this.add.particles('star');
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -83,6 +85,10 @@ export class GameScene extends Scene {
       const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
       this.add.existing(cannon);
       this.cannons.push(cannon);
+      this.particles.createEmitter({
+        x: tileX, y: tileY, lifespan: 200, speed: 200, scale: { start: 1, end: 0 }, quantity: 100,
+        tint: 0x00dd00
+      }).explode(100, tileX, tileY)
     }
   }
 
@@ -133,6 +139,20 @@ export class GameScene extends Scene {
     })
 
     this.blobMap.removeTileAtWorldXY(x, y);
+    this.particles.createEmitter({
+      x: tile.pixelX + 8, y: tile.pixelY + 8,
+      lifespan: 2000, speed: 100,
+      gravityX: -300, tint: 0x00aa00,
+      scale: { start: 2, end: 0 },
+      frequency: 100
+    })
+  }
+
+  explodeEffect(x: number, y: number, quantity: number = 100, lifespan: number = 200, tint: number = 0xdddd00) {
+    this.particles.createEmitter({
+      x, y, lifespan: Math.random() * lifespan / 2 + lifespan / 2, speed: Math.random() * 100 + 100, scale: { start: 1, end: 0 }, quantity,
+      tint
+    }).explode(100, x, y)
   }
 
   update() {
