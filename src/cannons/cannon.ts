@@ -1,8 +1,10 @@
 import { GameObjects } from "phaser";
+import { Ammo } from '../ammo/ammo';
 
 export class Cannon extends GameObjects.Sprite {
 
   target: GameObjects.Sprite | null = null;
+  ammo!: GameObjects.Group;
 
   targetEnemy(closestEnemy: GameObjects.Sprite, distance: number): any {
     if (this.target === null || !this.target.active) {

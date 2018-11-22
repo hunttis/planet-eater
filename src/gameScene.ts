@@ -1,6 +1,7 @@
 import { Scene, GameObjects, Input } from 'phaser';
-import { Cannon } from './cannons/cannon';
+import { Cannon } from './cannons/cannon';
 import { BlobCannon } from './cannons/blobcannon';
+import { Ammo } from './ammo/ammo'
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -11,6 +12,7 @@ export class GameScene extends Scene {
   blobMap!: Phaser.Tilemaps.Tilemap;
   tileCursor!: GameObjects.Sprite;
   cannons: Array<Cannon> = [];
+  ammo!: GameObjects.Group;
   enemies: Array<GameObjects.Sprite> = [];
   builtSpots: Array<Phaser.Geom.Point> = [];
 
@@ -30,13 +32,14 @@ export class GameScene extends Scene {
   create() {
     this.impact.world.setBounds();
 
-    this.starfield = this.add.group({key: 'star', frameQuantity: this.starCount});
+    this.starfield = this.add.group({ key: 'star', frameQuantity: this.starCount });
     Phaser.Actions.RandomRectangle(this.starfield.getChildren(), this.bgBox);
-   
+
     this.blobMap = this.loadAndCreateMap();
     this.cursors = this.input.keyboard.createCursorKeys();
     this.tileCursor = this.add.sprite(0, 0, 'cursor', 0);
     this.tileCursor.setOrigin(0, 0);
+    this.ammo = this.add.group();
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -72,7 +75,7 @@ export class GameScene extends Scene {
     const tileX = Math.floor(cursorX / 16) * 16 + 8;
     const tileY = Math.floor(cursorY / 16) * 16 + 8;
     this.add.sprite(tileX, tileY, 'cannons', 0); // cannon base
-    const cannon = new BlobCannon(this, tileX, tileY);
+    const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
     this.add.existing(cannon);
     this.cannons.push(cannon);
   }
@@ -104,9 +107,9 @@ export class GameScene extends Scene {
 
   update() {
 
-    for (let i=0; i < 10; i++) {
+    for (let i = 0; i < 10; i++) {
       const startIndex = this.starCount / 10 * i;
-      Phaser.Actions.IncXY(this.starfield.getChildren().slice(startIndex, this.starCount / 10 * (i + 1)), -i -1, 0);
+      Phaser.Actions.IncXY(this.starfield.getChildren().slice(startIndex, this.starCount / 10 * (i + 1)), -i - 1, 0);
     }
 
     Phaser.Actions.WrapInRectangle(this.starfield.getChildren(), this.bgBox);
@@ -122,15 +125,14 @@ export class GameScene extends Scene {
     })
 
     this.enemyCooldown -= this.sys.game.loop.delta;
-    // console.log(this.sys.game.loop.delta);
+
     if (this.enemyCooldown < 0) {
       this.enemyCooldown = 2000;
       this.createEnemy();
       console.log('Enemy! Total enemies: ', this.enemies.filter(enemy => enemy.active).length);
     }
     this.enemies.forEach(enemy => {
-      // console.log('enemylocation', enemy.x, 'x', enemy.y);
-      enemy.x -= 1;
+      enemy.x -= 2;
 
       if (enemy.x < -10) {
         enemy.destroy();
@@ -138,6 +140,8 @@ export class GameScene extends Scene {
     })
 
     this.checkCannons();
-    
+
+    console.log('ammo', this.ammo.getLength())
+
   }
 }
