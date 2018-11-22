@@ -141,7 +141,5 @@ export class GameScene extends Scene {
 
     this.checkCannons();
 
-    console.log('ammo', this.ammo.getLength())
-
   }
 }
