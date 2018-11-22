@@ -19,7 +19,7 @@ export class GameScene extends Scene {
   enemyCooldown: number = 1000;
 
   starCount: number = 10;
-  particles: GameObjects.Particles.ParticleEmitterManager;
+  particles!: GameObjects.Particles.ParticleEmitterManager;
 
   constructor() {
     super('GameScene');
@@ -150,7 +150,11 @@ export class GameScene extends Scene {
 
   explodeEffect(x: number, y: number, quantity: number = 100, lifespan: number = 200, tint: number = 0xdddd00) {
     this.particles.createEmitter({
-      x, y, lifespan: Math.random() * lifespan / 2 + lifespan / 2, speed: Math.random() * 100 + 100, scale: { start: 1, end: 0 }, quantity,
+      x, y,
+      lifespan: Math.random() * lifespan / 2 + lifespan / 2,
+      speed: Math.random() * 100 + 100,
+      scale: { start: 1, end: 0 },
+      quantity,
       tint
     }).explode(100, x, y)
   }
