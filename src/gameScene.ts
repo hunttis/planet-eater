@@ -129,7 +129,6 @@ export class GameScene extends Scene {
     if (this.enemyCooldown < 0) {
       this.enemyCooldown = 2000;
       this.createEnemy();
-      console.log('Enemy! Total enemies: ', this.enemies.filter(enemy => enemy.active).length);
     }
     this.enemies.forEach(enemy => {
       enemy.x -= 2;
