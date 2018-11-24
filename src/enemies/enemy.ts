@@ -6,8 +6,8 @@ export class Enemy extends GameObjects.Sprite {
   health: number = 100;
   scene: GameScene;
 
-  constructor(scene: GameScene, x: number, y: number) {
-    super(scene, x, y, 'cannons', 1);
+  constructor(scene: GameScene, x: number, y: number, texture: string = 'cannons', frame: number = 1) {
+    super(scene, x, y, texture, frame);
     this.scene = scene;
     console.log('created');
   }

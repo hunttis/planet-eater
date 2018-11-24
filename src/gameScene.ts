@@ -21,6 +21,7 @@ export class GameScene extends Scene {
 
   starCount: number = 10;
   particles!: GameObjects.Particles.ParticleEmitterManager;
+  bubbleparticles!: GameObjects.Particles.ParticleEmitterManager;
 
   constructor() {
     super('GameScene');
@@ -44,7 +45,16 @@ export class GameScene extends Scene {
     this.ammo = this.add.group();
     this.enemies = this.add.group();
     this.particles = this.add.particles('star');
+    this.bubbleparticles = this.add.particles('bubbles');
     this.enemyAmmo = this.add.group();
+
+    const blobbyConfig = {
+      key: 'blobby',
+      frames: this.anims.generateFrameNumbers('blobshot', {frames: [0, 1, 2, 3, 4, 5, 6]}),
+      frameRate: 10,
+      repeat: -1
+    }
+    this.anims.create(blobbyConfig);
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -143,12 +153,13 @@ export class GameScene extends Scene {
     })
 
     this.blobMap.removeTileAtWorldXY(x, y);
-    this.particles.createEmitter({
+    this.bubbleparticles.createEmitter({
       x: tile.pixelX + 8, y: tile.pixelY + 8,
       lifespan: 2000, speed: 100,
       gravityX: -300, tint: 0x00aa00,
       scale: { start: 2, end: 0 },
-      frequency: 100
+      frequency: 100,
+      frame: {frames: [0, 1, 2, 3, 4, 5, 6]},
     })
   }
 

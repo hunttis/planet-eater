@@ -1,13 +1,14 @@
 import { Cannon } from "./cannon";
-import { Scene, GameObjects } from "phaser";
+import { GameObjects } from "phaser";
 import { BlobAmmo } from "~/ammo/blobammo";
+import { GameScene } from "~/gameScene";
 
 export class BlobCannon extends Cannon {
 
   cooldown: number = 1000;
   range: number = 200;
 
-  constructor(scene: Scene, xLoc: number, yLoc: number, ammo: GameObjects.Group) {
+  constructor(scene: GameScene, xLoc: number, yLoc: number, ammo: GameObjects.Group) {
     super(scene, xLoc, yLoc, 'cannons', 1);
     this.ammo = ammo;
   }
@@ -28,7 +29,7 @@ export class BlobCannon extends Cannon {
       console.log('close enough!');
       this.cooldown = 1000;
 
-      const shot = new BlobAmmo(this.scene, this.x + 10, this.y + 10, this.target);
+      const shot = new BlobAmmo(this.scene, this.x, this.y, this.target);
       this.ammo.add(shot, true);
     }
   }

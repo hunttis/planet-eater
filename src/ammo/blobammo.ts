@@ -1,25 +1,32 @@
 import { Ammo } from './ammo';
+import { Enemy } from "~/enemies/enemy";
+import { GameScene } from "~/gameScene";
 
 export class BlobAmmo extends Ammo {
-  speed: number = 5;
+  speed: number = 4;
   damage: number = 40;
+
+  constructor(scene: GameScene, x: number, y: number, target: Enemy, texture: string = 'cannons', frame: number = 0) {
+    super(scene, x, y, target, 'blobshot');
+  }
 
   update() {
     super.update()
+    this.anims.play('blobby', true);
     const myCenter = this.getCenter();
     const targetCenter = this.target.getCenter();
 
     if (targetCenter.x < myCenter.x) {
-      this.x -= this.speed;
+      this.x -= Math.min(this.speed, Math.abs(targetCenter.x - myCenter.x));
     }
     else {
-      this.x += this.speed;
+      this.x += Math.min(this.speed, Math.abs(targetCenter.x - myCenter.x));
     }
     if (targetCenter.y < myCenter.y) {
-      this.y -= this.speed;
+      this.y -= Math.min(this.speed, Math.abs(targetCenter.y - myCenter.y));
     }
     else {
-      this.y += this.speed;
+      this.y += Math.min(this.speed, Math.abs(targetCenter.y - myCenter.y));
     }
 
     const distanceToTarget = Phaser.Math.Distance.Between(

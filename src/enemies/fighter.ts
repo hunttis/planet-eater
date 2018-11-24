@@ -13,7 +13,7 @@ export class Fighter extends Enemy {
   cooldown: number = this.originalCooldownValue;
 
   constructor(scene: GameScene, x: number, y: number, ammo: GameObjects.Group) {
-    super(scene, x, y);
+    super(scene, x, y, 'fighter');
     this.ySpeed = 2 + Math.random() * 2 - 4;
     this.ammo = ammo;
   }

@@ -7,8 +7,8 @@ export class Ammo extends GameObjects.Sprite {
   target: Enemy;
   scene: GameScene;
 
-  constructor(scene: GameScene, x: number, y: number, target: Enemy) {
-    super(scene, x, y, 'cannons', 0);
+  constructor(scene: GameScene, x: number, y: number, target: Enemy, texture: string = 'cannons', frame: number = 0) {
+    super(scene, x, y, texture, frame);
     this.scene = scene;
     this.target = target;
   }
