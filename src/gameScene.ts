@@ -94,7 +94,7 @@ export class GameScene extends Scene {
     }).length > 0
 
     if (!alreadyBuilt) {
-      console.log("PLAY BUILD SOUND HERE");
+      //this.sound.play('buildcannon');
       const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
       this.add.existing(cannon);
       this.cannons.push(cannon);
