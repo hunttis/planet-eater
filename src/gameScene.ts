@@ -1,7 +1,6 @@
 import { Scene, GameObjects, Input, Tilemaps } from 'phaser';
 import { Cannon } from './cannons/cannon';
 import { BlobCannon } from './cannons/blobcannon';
-import { Ammo } from './ammo/ammo'
 import { Fighter } from './enemies/fighter';
 import buildMP3 from  './assets/audio/buildcannon.mp3';
 import buildOGG from './assets/audio/buildcannon.ogg';
@@ -189,7 +188,8 @@ export class GameScene extends Scene {
       let closestEnemy: GameObjects.Sprite | null = null;
       let closestDistance: number = 100000;
       this.enemies.getChildren().forEach(enemy => {
-        const distance = Phaser.Math.Distance.Between(cannon.x, cannon.y, enemy.x as number, enemy.y as number)
+        const enemyShip = <Enemy> enemy;
+        const distance = Phaser.Math.Distance.Between(cannon.x, cannon.y, enemyShip.x, enemyShip.y)
         if (closestDistance > distance) {
           closestDistance = distance;
           closestEnemy = enemy as GameObjects.Sprite;
