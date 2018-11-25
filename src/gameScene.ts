@@ -6,8 +6,13 @@ import { Fighter } from './enemies/fighter';
 import buildMP3 from  './assets/audio/buildcannon.mp3';
 import buildOGG from './assets/audio/buildcannon.ogg';
 import buildWAV from './assets/audio/buildcannon.wav';
+<<<<<<< HEAD
 import { EnemyAmmo } from './ammo/enemyammo';
 import { Enemy } from './enemies/enemy';
+=======
+import musicMP3 from  './assets/audio/planeteater.mp3';
+import musicOGG from './assets/audio/planeteater.ogg';
+>>>>>>> Add music
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -28,6 +33,7 @@ export class GameScene extends Scene {
   particles!: GameObjects.Particles.ParticleEmitterManager;
   bubbleparticles!: GameObjects.Particles.ParticleEmitterManager;
   buildCannonSound!: Phaser.Sound.BaseSound;
+  music!: Phaser.Sound.BaseSound;
 
   constructor() {
     super('GameScene');
@@ -38,6 +44,7 @@ export class GameScene extends Scene {
     this.enemySpawnBox = new Phaser.Geom.Rectangle(Number(this.game.config.width) + 8, 100, Number(this.game.config.width) + 16, Number(this.game.config.height)- 100);
     const result = this.load.audio('buildcannon', [buildMP3, buildOGG, buildWAV]);
     console.log('AUDIO', result);
+    this.load.audio('planeteater', [musicMP3, musicOGG]);
   }
 
   create() {
@@ -57,6 +64,8 @@ export class GameScene extends Scene {
     this.enemyAmmo = this.add.group();
 
     this.buildCannonSound = this.sound.add('buildcannon');
+    this.music = this.sound.add('planeteater');
+    this.music.play('', {loop: true});
 
     const blobbyConfig = {
       key: 'blobby',
