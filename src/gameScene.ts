@@ -6,13 +6,10 @@ import { Fighter } from './enemies/fighter';
 import buildMP3 from  './assets/audio/buildcannon.mp3';
 import buildOGG from './assets/audio/buildcannon.ogg';
 import buildWAV from './assets/audio/buildcannon.wav';
-<<<<<<< HEAD
 import { EnemyAmmo } from './ammo/enemyammo';
 import { Enemy } from './enemies/enemy';
-=======
 import musicMP3 from  './assets/audio/planeteater.mp3';
 import musicOGG from './assets/audio/planeteater.ogg';
->>>>>>> Add music
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
