@@ -6,6 +6,8 @@ import { Fighter } from './enemies/fighter';
 import buildMP3 from  './assets/audio/buildcannon.mp3';
 import buildOGG from './assets/audio/buildcannon.ogg';
 import buildWAV from './assets/audio/buildcannon.wav';
+import { EnemyAmmo } from './ammo/enemyammo';
+import { Enemy } from './enemies/enemy';
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -33,7 +35,7 @@ export class GameScene extends Scene {
 
   preload() {
     this.bgBox = new Phaser.Geom.Rectangle(0, 0, Number(this.game.config.width), Number(this.game.config.height));
-    this.enemySpawnBox = new Phaser.Geom.Rectangle(Number(this.game.config.width) + 8, 0, Number(this.game.config.width) + 16, Number(this.game.config.height));
+    this.enemySpawnBox = new Phaser.Geom.Rectangle(Number(this.game.config.width) + 8, 100, Number(this.game.config.width) + 16, Number(this.game.config.height)- 100);
     const result = this.load.audio('buildcannon', [buildMP3, buildOGG, buildWAV]);
     console.log('AUDIO', result);
   }
@@ -138,11 +140,23 @@ export class GameScene extends Scene {
     })
   }
 
+  afterBurner(x: number, y: number, tint: number[]) {
+    this.particles.createEmitter({
+      x, y, lifespan: 200, scale: { start: 1, end: 0 }, quantity: 1,
+      tint,
+      gravityX: 300,
+      speedX: {min: 100, max: 300},
+      speedY: {min: -100, max: 100},
+    }).explode(1, x, y)
+  }
+
   updateAmmos() {
     this.ammo.getChildren().forEach(shot => {
       shot.update()
     })
-    this.enemyAmmo.getChildren().forEach(shot => {
+    this.enemyAmmo.getChildren().forEach(shot=> {
+      const enemyShot = <EnemyAmmo> shot;
+      this.afterBurner(enemyShot.x + enemyShot.width / 2, enemyShot.y, [0xdd5500, 0xff3300]);
       shot.update()
     })
   }
@@ -183,7 +197,7 @@ export class GameScene extends Scene {
     this.particles.createEmitter({
       x, y,
       lifespan: Math.random() * lifespan / 2 + lifespan / 2,
-      speed: Math.random() * 100 + 100,
+      speed: {min: 100, max: 200},
       scale: { start: 1, end: 0 },
       quantity,
       tint
@@ -216,6 +230,8 @@ export class GameScene extends Scene {
       this.createEnemy();
     }
     this.enemies.getChildren().forEach(enemy => {
+      const enemyShip = <Enemy> enemy;
+      this.afterBurner(enemyShip.x, enemyShip.y, [0x3333ff, 0x0033ff]);
       enemy.update();
     })
 

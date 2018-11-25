@@ -19,7 +19,7 @@ export class Enemy extends GameObjects.Sprite {
   update() {
     super.update();
     if (this.health <= 0) {
-      this.scene.explodeEffect(this.getCenter().x, this.getCenter().y, 100, 500, 0xdd0000);
+      this.scene.explodeEffect(this.getCenter().x, this.getCenter().y, 100, 750, 0xdd0000);
       this.destroy();
     }
   }

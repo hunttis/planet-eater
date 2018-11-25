@@ -1,7 +1,10 @@
 import { EnemyAmmo } from './enemyammo'
+import { GameScene } from '~/gameScene';
+import { GameObjects } from 'phaser';
 
 export class FighterAmmo extends EnemyAmmo {
   speed: number = 5;
+  particles!: GameObjects.Particles.ParticleEmitterManager;
 
   update() {
     super.update();
