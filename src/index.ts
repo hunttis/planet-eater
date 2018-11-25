@@ -2,7 +2,6 @@ import { Game, AUTO, Scene } from 'phaser';
 import * as imageAssets from './assets/*.png';
 import * as spriteSheetAssets from './assets/spritesheets/*.png';
 import * as jsonAssets from './assets/*.json';
-import * as audioAssets from './assets/audio/*.mp3';
 import { MenuScene } from './menuScene';
 import { GameScene } from './gameScene';
 import GameScalePlugin from 'phaser-plugin-game-scale';
@@ -20,11 +19,7 @@ class InitScene extends Scene {
     for (const [name, path] of Object.entries(jsonAssets)) {
       this.load.tilemapTiledJSON(name, path as string);
       console.log('loaded', path, '->', name);
-    }
-    for (const [name, path] of Object.entries(audioAssets)) {
-      this.load.audio({ key: name, urlConfig: path as string });
-      console.log('loaded', path, '->', name);
-    }
+    }    
   }
 
   create() {
