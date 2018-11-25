@@ -9,6 +9,9 @@ import { EnemyAmmo } from './ammo/enemyammo';
 import { Enemy } from './enemies/enemy';
 import musicMP3 from  './assets/audio/planeteater.mp3';
 import musicOGG from './assets/audio/planeteater.ogg';
+import blobCannonFireMP3 from  './assets/audio/blobammo.mp3';
+import blobCannonFireOGG from './assets/audio/blobammo.ogg';
+import blobCannonFireWAV from './assets/audio/blobammo.wav';
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -48,6 +51,7 @@ export class GameScene extends Scene {
     const result = this.load.audio('buildcannon', [buildMP3, buildOGG, buildWAV]);
     console.log('AUDIO', result);
     this.load.audio('planeteater', [musicMP3, musicOGG]);
+    this.load.audio('blobammo', [blobCannonFireMP3, blobCannonFireOGG, blobCannonFireWAV]);
   }
 
   create() {

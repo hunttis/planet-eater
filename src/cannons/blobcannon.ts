@@ -7,10 +7,12 @@ export class BlobCannon extends Cannon {
 
   cooldown: number = 1000;
   range: number = 200;
+  fireSound: Phaser.Sound.BaseSound;
 
   constructor(scene: GameScene, xLoc: number, yLoc: number, ammo: GameObjects.Group) {
     super(scene, xLoc, yLoc, 'cannons', 1);
     this.ammo = ammo;
+    this.fireSound = this.scene.sound.add('blobammo');
   }
 
   update() {
@@ -31,6 +33,7 @@ export class BlobCannon extends Cannon {
 
       const shot = new BlobAmmo(this.scene, this.x, this.y, this.target);
       this.ammo.add(shot, true);
+      this.fireSound.play();
     }
   }
 
