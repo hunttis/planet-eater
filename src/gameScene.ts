@@ -35,6 +35,9 @@ export class GameScene extends Scene {
   blueAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
   redAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
   music!: Phaser.Sound.BaseSound;
+  cannonBuildEmitter!: GameObjects.Particles.ParticleEmitter;
+  explosionEmitter!: GameObjects.Particles.ParticleEmitter;
+  sparkEmitter!: GameObjects.Particles.ParticleEmitter;
 
   constructor() {
     super('GameScene');
@@ -104,6 +107,28 @@ export class GameScene extends Scene {
       speedY: {min: -100, max: 100},
     });
     this.redAfterBurnerEmitter.stop();
+
+    this.cannonBuildEmitter = this.particles.createEmitter({
+      lifespan: 200, speed: 200, scale: { start: 1, end: 0 }, quantity: 100,
+      tint: 0x00dd00
+    });
+    this.cannonBuildEmitter.stop();
+
+    this.explosionEmitter = this.particles.createEmitter({
+      lifespan: {min: 300, max: 750},
+      speed: {min: 100, max: 200},
+      scale: { start: 1, end: 0 },
+      tint: {min: 0xdd0000, max: 0xff0000}
+    });
+    this.explosionEmitter.stop();
+
+    this.sparkEmitter = this.particles.createEmitter({
+      lifespan: {min: 100, max: 300},
+      speed: {min: 100, max: 200},
+      scale: { start: 1, end: 0 },
+      tint: {min: 0xffff00, max: 0xffff55}
+    });
+    this.sparkEmitter.stop();
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -147,10 +172,7 @@ export class GameScene extends Scene {
       const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
       this.add.existing(cannon);
       this.cannons.push(cannon);
-      this.particles.createEmitter({
-        x: tileX, y: tileY, lifespan: 200, speed: 200, scale: { start: 1, end: 0 }, quantity: 100,
-        tint: 0x00dd00
-      }).explode(100, tileX, tileY)
+      this.cannonBuildEmitter.explode(100, tileX, tileY)
     }
   }
 
@@ -223,15 +245,12 @@ export class GameScene extends Scene {
     }
   }
 
-  explodeEffect(x: number, y: number, quantity: number = 100, lifespan: number = 200, tint: number = 0xdddd00) {
-    this.particles.createEmitter({
-      x, y,
-      lifespan: Math.random() * lifespan / 2 + lifespan / 2,
-      speed: {min: 100, max: 200},
-      scale: { start: 1, end: 0 },
-      quantity,
-      tint
-    }).explode(100, x, y)
+  explodeEffect(x: number, y: number) {
+    this.explosionEmitter.explode(100, x, y)
+  }
+
+  sparkEffect(x: number, y: number) {
+    this.sparkEmitter.explode(50, x, y)
   }
 
   update() {

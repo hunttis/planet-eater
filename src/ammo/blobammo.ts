@@ -37,7 +37,7 @@ export class BlobAmmo extends Ammo {
 
     if (distanceToTarget < 5) {
       this.target.damage(this.damage);
-      this.scene.explodeEffect(myCenter.x, myCenter.y, 100, 300);
+      this.scene.sparkEffect(myCenter.x, myCenter.y);
       this.destroy();
     }
   }
