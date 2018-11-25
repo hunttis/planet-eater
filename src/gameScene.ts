@@ -177,12 +177,15 @@ export class GameScene extends Scene {
     this.blobMap.removeTileAtWorldXY(x, y);
     this.bubbleparticles.createEmitter({
       x: tile.pixelX + 8, y: tile.pixelY + 8,
-      lifespan: 2000, speed: 100,
+      lifespan: 2000,
       gravityX: -300, tint: 0x00aa00,
-      scale: { start: 2, end: 0 },
+      scale: { start: 3, end: 0 },
       frequency: 100,
       frame: {frames: [0, 1, 2, 3, 4, 5, 6]},
-    })
+      quantity: 50,
+      speedX: {min: -100, max: 100},
+      speedY: {min: -100, max: 100},
+    }).explode()
   }
 
   getCannonOnTile(tile: Tilemaps.Tile) {
