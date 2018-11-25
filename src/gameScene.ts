@@ -27,7 +27,11 @@ export class GameScene extends Scene {
   starCount: number = 10;
   particles!: GameObjects.Particles.ParticleEmitterManager;
   bubbleparticles!: GameObjects.Particles.ParticleEmitterManager;
+  
   buildCannonSound!: Phaser.Sound.BaseSound;
+  bubbleEmitter!: GameObjects.Particles.ParticleEmitter;
+  blueAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
+  redAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
 
   constructor() {
     super('GameScene');
@@ -54,6 +58,7 @@ export class GameScene extends Scene {
     this.enemies = this.add.group();
     this.particles = this.add.particles('star');
     this.bubbleparticles = this.add.particles('bubbles');
+    
     this.enemyAmmo = this.add.group();
 
     this.buildCannonSound = this.sound.add('buildcannon');
@@ -65,6 +70,34 @@ export class GameScene extends Scene {
       repeat: -1
     }
     this.anims.create(blobbyConfig);
+
+    this.bubbleEmitter = this.bubbleparticles.createEmitter({
+      lifespan: 2000,
+      gravityX: -300, tint: 0x00aa00,
+      scale: { start: 3, end: 0 },
+      frame: {frames: [0, 1, 2, 3, 4, 5, 6]},
+      speedX: {min: -100, max: 100},
+      speedY: {min: -100, max: 100},
+    });
+    this.bubbleEmitter.stop();
+
+    this.blueAfterBurnerEmitter = this.particles.createEmitter({
+      lifespan: 200, scale: { start: 1, end: 0 },
+      tint: [0x3333ff, 0x0033ff],
+      gravityX: 300,
+      speedX: {min: 100, max: 300},
+      speedY: {min: -100, max: 100},
+    });
+    this.blueAfterBurnerEmitter.stop();
+
+    this.redAfterBurnerEmitter = this.particles.createEmitter({
+      lifespan: 200, scale: { start: 1, end: 0 },
+      tint: [0xdd5500, 0xff3300],
+      gravityX: 300,
+      speedX: {min: 100, max: 300},
+      speedY: {min: -100, max: 100},
+    });
+    this.redAfterBurnerEmitter.stop();
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -140,14 +173,12 @@ export class GameScene extends Scene {
     })
   }
 
-  afterBurner(x: number, y: number, tint: number[]) {
-    this.particles.createEmitter({
-      x, y, lifespan: 200, scale: { start: 1, end: 0 }, quantity: 1,
-      tint,
-      gravityX: 300,
-      speedX: {min: 100, max: 300},
-      speedY: {min: -100, max: 100},
-    }).explode(1, x, y)
+  afterBurner(x: number, y: number, color: string) {
+    if (color === 'blue') {
+      this.blueAfterBurnerEmitter.explode(1, x, y)
+    } else {
+      this.redAfterBurnerEmitter.explode(1, x, y);
+    }
   }
 
   updateAmmos() {
@@ -156,7 +187,7 @@ export class GameScene extends Scene {
     })
     this.enemyAmmo.getChildren().forEach(shot=> {
       const enemyShot = <EnemyAmmo> shot;
-      this.afterBurner(enemyShot.x + enemyShot.width / 2, enemyShot.y, [0xdd5500, 0xff3300]);
+      this.afterBurner(enemyShot.x + enemyShot.width / 2, enemyShot.y, 'red');
       shot.update()
     })
   }
@@ -175,17 +206,7 @@ export class GameScene extends Scene {
     })
 
     this.blobMap.removeTileAtWorldXY(x, y);
-    this.bubbleparticles.createEmitter({
-      x: tile.pixelX + 8, y: tile.pixelY + 8,
-      lifespan: 2000,
-      gravityX: -300, tint: 0x00aa00,
-      scale: { start: 3, end: 0 },
-      frequency: 100,
-      frame: {frames: [0, 1, 2, 3, 4, 5, 6]},
-      quantity: 50,
-      speedX: {min: -100, max: 100},
-      speedY: {min: -100, max: 100},
-    }).explode()
+    this.bubbleEmitter.explode(50, x + 8, y + 8);
   }
 
   getCannonOnTile(tile: Tilemaps.Tile) {
@@ -234,7 +255,7 @@ export class GameScene extends Scene {
     }
     this.enemies.getChildren().forEach(enemy => {
       const enemyShip = <Enemy> enemy;
-      this.afterBurner(enemyShip.x, enemyShip.y, [0x3333ff, 0x0033ff]);
+      this.afterBurner(enemyShip.x, enemyShip.y, 'blue');
       enemy.update();
     })
 
