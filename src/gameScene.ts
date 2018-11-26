@@ -12,6 +12,7 @@ import musicOGG from './assets/audio/planeteater.ogg';
 import blobCannonFireMP3 from  './assets/audio/blobammo.mp3';
 import blobCannonFireOGG from './assets/audio/blobammo.ogg';
 import blobCannonFireWAV from './assets/audio/blobammo.wav';
+import { Scout } from './enemies/scout';
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -25,21 +26,39 @@ export class GameScene extends Scene {
   ammo!: GameObjects.Group;
   enemyAmmo!: GameObjects.Group;
   enemies!: GameObjects.Group;
+  planet!: GameObjects.Sprite;
 
   enemyCooldown: number = 1000;
+  elapsed: number = 0;
 
   starCount: number = 10;
   particles!: GameObjects.Particles.ParticleEmitterManager;
   bubbleparticles!: GameObjects.Particles.ParticleEmitterManager;
   
   buildCannonSound!: Phaser.Sound.BaseSound;
+  music!: Phaser.Sound.BaseSound;
+
   bubbleEmitter!: GameObjects.Particles.ParticleEmitter;
   blueAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
   redAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
-  music!: Phaser.Sound.BaseSound;
   cannonBuildEmitter!: GameObjects.Particles.ParticleEmitter;
   explosionEmitter!: GameObjects.Particles.ParticleEmitter;
   sparkEmitter!: GameObjects.Particles.ParticleEmitter;
+  splashEmitter!: GameObjects.Particles.ParticleEmitter;
+  planetMeltEmitter!: GameObjects.Particles.ParticleEmitter;
+
+  STATE_SCOUTS: string = 'SCOUTS';
+  STATE_FIGHTERS: string = 'FIGHTERS';
+  STATE_PLANET: string = 'PLANET';
+
+  STATE_SCOUT_LENGTH: number = 30000;
+  STATE_FIGHTER_LENGTH: number = 60000;
+
+  PLANET_SPEED: number = 0.5;
+
+  planetState: string = 'traveling';
+  currentState: string = this.STATE_SCOUTS;
+  stateText!: Phaser.GameObjects.Text;
 
   constructor() {
     super('GameScene');
@@ -47,7 +66,7 @@ export class GameScene extends Scene {
 
   preload() {
     this.bgBox = new Phaser.Geom.Rectangle(0, 0, Number(this.game.config.width), Number(this.game.config.height));
-    this.enemySpawnBox = new Phaser.Geom.Rectangle(Number(this.game.config.width) + 8, 100, Number(this.game.config.width) + 16, Number(this.game.config.height)- 100);
+    this.enemySpawnBox = new Phaser.Geom.Rectangle(Number(this.game.config.width) + 8, 100, Number(this.game.config.width) + 9, Number(this.game.config.height)- 100);
     const result = this.load.audio('buildcannon', [buildMP3, buildOGG, buildWAV]);
     console.log('AUDIO', result);
     this.load.audio('planeteater', [musicMP3, musicOGG]);
@@ -105,7 +124,7 @@ export class GameScene extends Scene {
     this.redAfterBurnerEmitter = this.particles.createEmitter({
       lifespan: 200, scale: { start: 1, end: 0 },
       tint: [0xdd5500, 0xff3300],
-      gravityX: 300,
+      gravityX: -100,
       speedX: {min: 100, max: 300},
       speedY: {min: -100, max: 100},
     });
@@ -132,6 +151,25 @@ export class GameScene extends Scene {
       tint: {min: 0xffff00, max: 0xffff55}
     });
     this.sparkEmitter.stop();
+
+    this.planetMeltEmitter = this.bubbleparticles.createEmitter({
+      speed: 100,
+      scale: { start: 3, end: 0 },
+    });
+    this.bubbleparticles.depth = 101;
+    this.planetMeltEmitter.stop();
+
+    this.splashEmitter = this.bubbleparticles.createEmitter({
+      lifespan: 2000,
+      gravityX: 50, tint: 0x00aa00,
+      scale: { start: 3, end: 0 },
+      frame: {frames: [0, 1, 2, 3, 4, 5, 6]},
+      speedX: {min: 0, max: 50},
+      speedY: {min: -100, max: 100},
+    });
+    this.splashEmitter.stop();
+
+    this.stateText = this.add.text(10, 10, this.currentState + ' incoming');
   }
 
   loadAndCreateMap(): Phaser.Tilemaps.Tilemap {
@@ -144,6 +182,7 @@ export class GameScene extends Scene {
     );
 
     const layer = map.createDynamicLayer('foreground', tileset, 0, 0);
+    layer.depth = 100;
     return map;
   }
 
@@ -173,16 +212,87 @@ export class GameScene extends Scene {
     if (!alreadyBuilt) {
       this.buildCannonSound.play();
       const cannon = new BlobCannon(this, tileX, tileY, this.ammo);
+      cannon.depth = 101;
       this.add.existing(cannon);
       this.cannons.push(cannon);
       this.cannonBuildEmitter.explode(100, tileX, tileY)
     }
   }
 
-  createEnemy() {
-    const enemy: Fighter = new Fighter(this, 0, 0, this.enemyAmmo);
-    Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
-    this.enemies.add(enemy, true);
+  createEnemy(type: string) {
+    if (type === 'fighter') {
+      const enemy: Fighter = new Fighter(this, 0, 0, this.enemyAmmo);
+      Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
+      this.enemies.add(enemy, true);
+    } else if (type === 'scout') {
+      const enemy: Scout = new Scout(this, 0, 0, this.enemyAmmo);
+      Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
+      this.enemies.add(enemy, true);
+    }
+  }
+
+  createPlanet() {
+    this.planetState = 'traveling';
+    this.planet = new Phaser.GameObjects.Sprite(this, Number(this.game.config.width) + 100, Number(this.game.config.height) / 2 + 20, 'planet')
+    this.add.existing(this.planet);
+    this.planet.tint = new Phaser.Display.Color().random(50).color;
+    this.planet.scaleX = 2.0;
+    this.planet.scaleY = 2.0;
+    this.planet.depth = 10;
+  }
+
+  updatePlanet() {
+    
+    if (this.planetState === 'traveling') {
+      this.planet.x -= this.PLANET_SPEED;
+      if (this.planet.x < 340) {
+        this.planetState = 'starting consumption';
+        this.splashEmitter.setEmitZone({
+          source: new Phaser.Geom.Line(340 - 64, 160, 340 - 64, Number(this.game.config.height) - 132),
+          type: 'random',
+          quantity: 100
+        }).explode(100, 0, 0);
+      }
+
+    } else if (this.planetState === 'starting consumption') {
+      this.planetMeltEmitter.start();
+      this.planetMeltEmitter.startFollow(this.planet);
+
+      this.planetMeltEmitter.setEmitZone({
+        source: new Phaser.Geom.Circle(0, 0, 64),
+        type: 'random',
+        quantity: 100})
+      this.planet.x -= this.PLANET_SPEED / 4;
+      this.planetState = 'getting consumed';
+
+    } else if (this.planetState === 'getting consumed') {
+      this.planet.x -= this.PLANET_SPEED / 4;
+      if (this.planet.x < 200) {
+        this.planetState = 'start melting';
+      }
+
+    } else if (this.planetState === 'start melting') {
+      this.tweens.add({
+        targets: this.planet,
+        scaleX: 0,
+        scaleY: 0,
+        alpha: 0,
+        duration: 2000,
+      });
+      this.planetState = 'melting';
+
+    } else if (this.planetState = 'melting') {
+      this.planetMeltEmitter.setEmitZone({
+        source: new Phaser.Geom.Circle(0, 0, 64 * this.planet.scaleX),
+        type: 'random',
+        quantity: 100
+      });
+      if (this.planet.scaleX === 0) {
+        this.planet.destroy();
+        this.planetMeltEmitter.stop();
+        this.planetState = 'done';
+      }
+    }    
   }
 
   checkCannons() {
@@ -276,12 +386,49 @@ export class GameScene extends Scene {
       cannon.setRotation(cannon.rotation + 0.01);
     })
 
-    this.enemyCooldown -= this.sys.game.loop.delta;
-
-    if (this.enemyCooldown < 0) {
-      this.enemyCooldown = 2000;
-      this.createEnemy();
+    if (this.currentState !== this.STATE_PLANET) {
+      this.enemyCooldown -= this.sys.game.loop.delta;
+      this.elapsed += this.sys.game.loop.delta;
+      if (this.enemyCooldown < 0) {
+        if (this.currentState === this.STATE_SCOUTS) {
+          this.enemyCooldown = Math.random() * 500 + 500;
+          this.createEnemy('scout');
+          if (this.elapsed > this.STATE_SCOUT_LENGTH) {
+            this.currentState = this.STATE_FIGHTERS;
+          }
+        } else if (this.currentState === this.STATE_FIGHTERS) {
+          this.enemyCooldown = 1000;
+          this.createEnemy('scout');
+          this.createEnemy('fighter');
+          if (this.elapsed > this.STATE_FIGHTER_LENGTH) {
+            this.currentState = this.STATE_PLANET;
+            this.createPlanet();
+            this.enemyCooldown = 100;
+          }
+        }
+      }
     }
+
+    if (this.currentState === this.STATE_PLANET && this.planet) {
+      this.enemyCooldown -= this.sys.game.loop.delta;
+      this.updatePlanet();
+      if (this.enemyCooldown < 0 ){
+        this.enemyCooldown = 500;
+        this.createEnemy('fighter');
+        this.createEnemy('scout');
+      }
+      if (this.planetState === 'done') {
+        this.elapsed = 0;
+        this.currentState = this.STATE_SCOUTS;
+      }
+    }
+
+    const textShouldBe = this.currentState + ' incoming';
+
+    if (this.stateText.text !== textShouldBe) {
+      this.stateText.text = textShouldBe;
+    }
+
     this.enemies.getChildren().forEach(enemy => {
       const enemyShip = <Enemy> enemy;
       this.afterBurner(enemyShip.x, enemyShip.y, 'blue');
@@ -290,6 +437,8 @@ export class GameScene extends Scene {
 
     this.checkCannons();
     this.updateAmmos();
+
+    
 
     this.cannons = this.cannons.filter(cannon => cannon.active);
   }
