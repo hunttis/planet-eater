@@ -14,6 +14,7 @@ import blobCannonFireOGG from './assets/audio/blobammo.ogg';
 import blobCannonFireWAV from './assets/audio/blobammo.wav';
 import { Scout } from './enemies/scout';
 import { Planet } from './enemies/planet';
+import { Effects } from './effects';
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -57,6 +58,7 @@ export class GameScene extends Scene {
 
   currentState: string = this.STATE_SCOUTS;
   stateText!: Phaser.GameObjects.Text;
+  effects!: Effects;
 
   constructor() {
     super('GameScene');
@@ -83,9 +85,8 @@ export class GameScene extends Scene {
     this.tileCursor.setOrigin(0, 0);
     this.ammo = this.add.group();
     this.enemies = this.add.group();
-    this.particles = this.add.particles('star');
-    this.bubbleparticles = this.add.particles('bubbles');
-    
+    this.effects = new Effects(this);
+
     this.enemyAmmo = this.add.group();
 
     this.buildCannonSound = this.sound.add('buildcannon');
@@ -99,73 +100,6 @@ export class GameScene extends Scene {
       repeat: -1
     }
     this.anims.create(blobbyConfig);
-
-    this.bubbleEmitter = this.bubbleparticles.createEmitter({
-      lifespan: 2000,
-      gravityX: -300, tint: 0x00aa00,
-      scale: { start: 3, end: 0 },
-      frame: {frames: [0, 1, 2, 3, 4, 5, 6]},
-      speedX: {min: -100, max: 100},
-      speedY: {min: -100, max: 100},
-    });
-    this.bubbleEmitter.stop();
-
-    this.blueAfterBurnerEmitter = this.particles.createEmitter({
-      lifespan: 200, scale: { start: 1, end: 0 },
-      tint: [0x3333ff, 0x0033ff],
-      gravityX: 300,
-      speedX: {min: 100, max: 300},
-      speedY: {min: -100, max: 100},
-    });
-    this.blueAfterBurnerEmitter.stop();
-
-    this.redAfterBurnerEmitter = this.particles.createEmitter({
-      lifespan: 200, scale: { start: 1, end: 0 },
-      tint: [0xdd5500, 0xff3300],
-      gravityX: -100,
-      speedX: {min: 100, max: 300},
-      speedY: {min: -100, max: 100},
-    });
-    this.redAfterBurnerEmitter.stop();
-
-    this.cannonBuildEmitter = this.particles.createEmitter({
-      lifespan: 200, speed: 200, scale: { start: 1, end: 0 }, quantity: 100,
-      tint: 0x00dd00
-    });
-    this.cannonBuildEmitter.stop();
-
-    this.explosionEmitter = this.particles.createEmitter({
-      lifespan: {min: 300, max: 750},
-      speed: {min: 100, max: 200},
-      scale: { start: 1, end: 0 },
-      tint: {min: 0xdd0000, max: 0xff0000}
-    });
-    this.explosionEmitter.stop();
-
-    this.sparkEmitter = this.particles.createEmitter({
-      lifespan: {min: 100, max: 300},
-      speed: {min: 100, max: 200},
-      scale: { start: 1, end: 0 },
-      tint: {min: 0xffff00, max: 0xffff55}
-    });
-    this.sparkEmitter.stop();
-
-    this.planetMeltEmitter = this.bubbleparticles.createEmitter({
-      speed: 100,
-      scale: { start: 3, end: 0 },
-    });
-    this.bubbleparticles.depth = 101;
-    this.planetMeltEmitter.stop();
-
-    this.splashEmitter = this.bubbleparticles.createEmitter({
-      lifespan: 2000,
-      gravityX: 50, tint: 0x00aa00,
-      scale: { start: 3, end: 0 },
-      frame: {frames: [0, 1, 2, 3, 4, 5, 6]},
-      speedX: {min: 0, max: 50},
-      speedY: {min: -100, max: 100},
-    });
-    this.splashEmitter.stop();
 
     this.stateText = this.add.text(10, 10, this.currentState + ' incoming');
   }
@@ -254,21 +188,13 @@ export class GameScene extends Scene {
     })
   }
 
-  afterBurner(x: number, y: number, color: string) {
-    if (color === 'blue') {
-      this.blueAfterBurnerEmitter.explode(1, x, y)
-    } else {
-      this.redAfterBurnerEmitter.explode(1, x, y);
-    }
-  }
-
   updateAmmos() {
     this.ammo.getChildren().forEach(shot => {
       shot.update()
     })
     this.enemyAmmo.getChildren().forEach(shot=> {
       const enemyShot = <EnemyAmmo> shot;
-      this.afterBurner(enemyShot.x + enemyShot.width / 2, enemyShot.y, 'red');
+      this.effects.redAfterBurner(enemyShot.x + enemyShot.width / 2, enemyShot.y);
       shot.update()
     })
   }
@@ -287,7 +213,7 @@ export class GameScene extends Scene {
     })
 
     this.blobMap.removeTileAtWorldXY(x, y);
-    this.bubbleEmitter.explode(50, x + 8, y + 8);
+    this.effects.explodeBubbles(x + 8, y + 8);
   }
 
   getCannonOnTile(tile: Tilemaps.Tile) {
@@ -316,6 +242,10 @@ export class GameScene extends Scene {
 
   getMeltEmitter() {
     return this.planetMeltEmitter;
+  }
+
+  getEffects() {
+    return this.effects;
   }
 
   update() {
@@ -383,7 +313,7 @@ export class GameScene extends Scene {
 
     this.enemies.getChildren().forEach(enemy => {
       const enemyShip = <Enemy> enemy;
-      this.afterBurner(enemyShip.x, enemyShip.y, 'blue');
+      this.effects.blueAfterBurner(enemyShip.x, enemyShip.y);
       enemy.update();
     })
 
