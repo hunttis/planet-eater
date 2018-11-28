@@ -95,6 +95,26 @@ export class Effects {
     this.splashEmitter.stop();
   }
 
+  splash(x1: number, y1: number, x2: number, y2: number) {
+    this.splashEmitter.setEmitZone({
+      source: new Phaser.Geom.Line(x1, y1, x2, y2),
+      type: 'random',
+      quantity: 100
+    }).explode(100, 0, 0);
+  }
+
+  spark(x: number, y: number) {
+    this.sparkEmitter.explode(50, x, y)
+  }
+
+  explosion(x: number, y: number) {
+    this.explosionEmitter.explode(100, x, y)
+  }
+
+  buildCannon(x: number, y: number) {
+    this.cannonBuildEmitter.explode(100, x,y)
+  }
+
   explodeBubbles(x: number, y: number) {
     this.bubbleEmitter.explode(50, x, y);
   }

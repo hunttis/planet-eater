@@ -34,20 +34,9 @@ export class GameScene extends Scene {
   elapsed: number = 0;
 
   starCount: number = 10;
-  particles!: GameObjects.Particles.ParticleEmitterManager;
-  bubbleparticles!: GameObjects.Particles.ParticleEmitterManager;
   
   buildCannonSound!: Phaser.Sound.BaseSound;
   music!: Phaser.Sound.BaseSound;
-
-  bubbleEmitter!: GameObjects.Particles.ParticleEmitter;
-  blueAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
-  redAfterBurnerEmitter!: GameObjects.Particles.ParticleEmitter;
-  cannonBuildEmitter!: GameObjects.Particles.ParticleEmitter;
-  explosionEmitter!: GameObjects.Particles.ParticleEmitter;
-  sparkEmitter!: GameObjects.Particles.ParticleEmitter;
-  splashEmitter!: GameObjects.Particles.ParticleEmitter;
-  planetMeltEmitter!: GameObjects.Particles.ParticleEmitter;
 
   STATE_SCOUTS: string = 'SCOUTS';
   STATE_FIGHTERS: string = 'FIGHTERS';
@@ -147,7 +136,7 @@ export class GameScene extends Scene {
       cannon.depth = 101;
       this.add.existing(cannon);
       this.cannons.push(cannon);
-      this.cannonBuildEmitter.explode(100, tileX, tileY)
+      this.effects.buildCannon(tileX, tileY)
     }
   }
 
@@ -225,23 +214,19 @@ export class GameScene extends Scene {
   }
 
   explodeEffect(x: number, y: number) {
-    this.explosionEmitter.explode(100, x, y)
+    this.effects.explosion(x, y)
   }
 
   sparkEffect(x: number, y: number) {
-    this.sparkEmitter.explode(50, x, y)
+    this.effects.spark(x, y)
   }
 
   splashEffect(x1: number, y1: number, x2: number, y2: number) {
-    this.splashEmitter.setEmitZone({
-      source: new Phaser.Geom.Line(x1, y1, x2, y2),
-      type: 'random',
-      quantity: 100
-    }).explode(100, 0, 0);
+    this.effects.splash(x1, y1, x2, y2);
   }
 
   getMeltEmitter() {
-    return this.planetMeltEmitter;
+    return this.effects.planetMeltEmitter;
   }
 
   getEffects() {
