@@ -16,10 +16,16 @@ export class FighterAmmo extends EnemyAmmo {
     if (tile) {
       const cannon = this.scene.getCannonOnTile(tile);
       if (cannon) {
-        this.scene.explodeEffect(this.getCenter().x, this.getCenter().y);
+        if (Math.random() < 0.05) { 
+          this.scene.explodeEffect(this.getCenter().x, this.getCenter().y);
+        }
         cannon.destroy();
         this.destroy();
       }
+    }
+
+    if (this.x < this.width) {
+      this.destroy();
     }
   }
 }

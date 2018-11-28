@@ -141,14 +141,16 @@ export class GameScene extends Scene {
   }
 
   createEnemy(type: string) {
-    if (type === 'fighter') {
-      const enemy: Fighter = new Fighter(this, 0, 0, this.enemyAmmo);
-      Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
-      this.enemies.add(enemy, true);
-    } else if (type === 'scout') {
-      const enemy: Scout = new Scout(this, 0, 0, this.enemyAmmo);
-      Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
-      this.enemies.add(enemy, true);
+    if (this.enemies.getLength() < 100) {
+      if (type === 'fighter') {
+        const enemy: Fighter = new Fighter(this, 0, 0, this.enemyAmmo);
+        Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
+        this.enemies.add(enemy, true);
+      } else if (type === 'scout') {
+        const enemy: Scout = new Scout(this, 0, 0, this.enemyAmmo);
+        Phaser.Actions.RandomRectangle([enemy], this.enemySpawnBox);
+        this.enemies.add(enemy, true);
+      }
     }
   }
 

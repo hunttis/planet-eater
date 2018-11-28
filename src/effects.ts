@@ -43,21 +43,24 @@ export class Effects {
       gravityX: 300,
       speedX: {min: 100, max: 300},
       speedY: {min: -100, max: 100},
+      maxParticles: 100,
     });
     this.blueAfterBurnerEmitter.stop();
 
     this.redAfterBurnerEmitter = this.particles.createEmitter({
-      lifespan: 200, scale: { start: 1, end: 0 },
+      lifespan: 100, scale: { start: 1, end: 0 },
       tint: [0xdd5500, 0xff3300],
       gravityX: -100,
       speedX: {min: 100, max: 300},
       speedY: {min: -100, max: 100},
+      maxParticles: 100,
     });
     this.redAfterBurnerEmitter.stop();
 
     this.cannonBuildEmitter = this.particles.createEmitter({
       lifespan: 200, speed: 200, scale: { start: 1, end: 0 }, quantity: 100,
-      tint: 0x00dd00
+      tint: 0x00dd00,
+      maxParticles: 200,
     });
     this.cannonBuildEmitter.stop();
 
@@ -65,7 +68,8 @@ export class Effects {
       lifespan: {min: 300, max: 750},
       speed: {min: 100, max: 200},
       scale: { start: 1, end: 0 },
-      tint: {min: 0xdd0000, max: 0xff0000}
+      tint: {min: 0xdd0000, max: 0xff0000},
+      maxParticles: 200,
     });
     this.explosionEmitter.stop();
 
@@ -73,7 +77,8 @@ export class Effects {
       lifespan: {min: 100, max: 300},
       speed: {min: 100, max: 200},
       scale: { start: 1, end: 0 },
-      tint: {min: 0xffff00, max: 0xffff55}
+      tint: {min: 0xffff00, max: 0xffff55},
+      maxParticles: 100,
     });
     this.sparkEmitter.stop();
 
