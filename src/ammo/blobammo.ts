@@ -15,19 +15,11 @@ export class BlobAmmo extends Ammo {
     this.anims.play('blobby', true);
     const myCenter = this.getCenter();
     const targetCenter = this.target.getCenter();
+    
+    const vectorToEnemy: Phaser.Math.Vector2 = new Phaser.Math.Vector2(myCenter.x - targetCenter.x, myCenter.y - targetCenter.y).normalize();
 
-    if (targetCenter.x < myCenter.x) {
-      this.x -= Math.min(this.speed, Math.abs(targetCenter.x - myCenter.x));
-    }
-    else {
-      this.x += Math.min(this.speed, Math.abs(targetCenter.x - myCenter.x));
-    }
-    if (targetCenter.y < myCenter.y) {
-      this.y -= Math.min(this.speed, Math.abs(targetCenter.y - myCenter.y));
-    }
-    else {
-      this.y += Math.min(this.speed, Math.abs(targetCenter.y - myCenter.y));
-    }
+    this.x -= vectorToEnemy.x * this.speed;
+    this.y -= vectorToEnemy.y * this.speed;
 
     const distanceToTarget = Phaser.Math.Distance.Between(
       myCenter.x,
@@ -38,6 +30,11 @@ export class BlobAmmo extends Ammo {
     if (distanceToTarget < 5) {
       this.target.damage(this.damage);
       this.scene.sparkEffect(myCenter.x, myCenter.y);
+      this.destroy();
+    }
+
+    if (this.active && (!this.target || !this.target.active)) {
+      this.scene.effects.bubbleEffect(myCenter.x, myCenter.y);
       this.destroy();
     }
   }

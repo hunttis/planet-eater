@@ -108,6 +108,10 @@ export class Effects {
     }).explode(100, 0, 0);
   }
 
+  bubbleEffect(x: number, y: number) {
+    this.bubbleEmitter.explode(1, x, y);
+  }
+
   spark(x: number, y: number) {
     this.sparkEmitter.explode(50, x, y)
   }
@@ -126,7 +130,6 @@ export class Effects {
 
   redAfterBurner(x: number, y: number) {
     this.redAfterBurnerEmitter.explode(1, x, y);
-
   }
 
   blueAfterBurner(x: number, y: number) {
