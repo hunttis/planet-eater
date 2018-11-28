@@ -7,6 +7,7 @@ export class Fighter extends Enemy {
 
   ammo: GameObjects.Group;
   ySpeed: number;
+  xSpeed: number;
   bufferSize: number = 20;
   health: number = 100;
   originalCooldownValue: number = 5000;
@@ -15,6 +16,7 @@ export class Fighter extends Enemy {
   constructor(scene: GameScene, x: number, y: number, ammo: GameObjects.Group) {
     super(scene, x, y, 'fighter');
     this.ySpeed = 2 + Math.random() * 2 - 4;
+    this.xSpeed = -2;
     this.ammo = ammo;
   }
 
@@ -30,7 +32,10 @@ export class Fighter extends Enemy {
       this.fire();
     }
 
-    this.x -= 2;
+    const movementVector: Phaser.Math.Vector2 = new Phaser.Math.Vector2(-this.xSpeed, -this.ySpeed);
+    this.setRotation(movementVector.angle());
+
+    this.x += this.xSpeed;
     this.y += this.ySpeed;
 
     if (this.y > (this.scene.game.config.height as number - this.bufferSize) || this.y < this.bufferSize) {
