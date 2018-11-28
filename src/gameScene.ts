@@ -13,6 +13,7 @@ import blobCannonFireMP3 from  './assets/audio/blobammo.mp3';
 import blobCannonFireOGG from './assets/audio/blobammo.ogg';
 import blobCannonFireWAV from './assets/audio/blobammo.wav';
 import { Scout } from './enemies/scout';
+import { Planet } from './enemies/planet';
 
 export class GameScene extends Scene {
   cursors!: Input.Keyboard.CursorKeys;
@@ -26,7 +27,7 @@ export class GameScene extends Scene {
   ammo!: GameObjects.Group;
   enemyAmmo!: GameObjects.Group;
   enemies!: GameObjects.Group;
-  planet!: GameObjects.Sprite;
+  planet!: Planet;
 
   enemyCooldown: number = 1000;
   elapsed: number = 0;
@@ -54,9 +55,6 @@ export class GameScene extends Scene {
   STATE_SCOUT_LENGTH: number = 30000;
   STATE_FIGHTER_LENGTH: number = 60000;
 
-  PLANET_SPEED: number = 0.5;
-
-  planetState: string = 'traveling';
   currentState: string = this.STATE_SCOUTS;
   stateText!: Phaser.GameObjects.Text;
 
@@ -232,67 +230,8 @@ export class GameScene extends Scene {
   }
 
   createPlanet() {
-    this.planetState = 'traveling';
-    this.planet = new Phaser.GameObjects.Sprite(this, Number(this.game.config.width) + 100, Number(this.game.config.height) / 2 + 20, 'planet')
+    this.planet = new Planet(this, Number(this.game.config.width) + 100, Number(this.game.config.height) / 2 + 20)
     this.add.existing(this.planet);
-    this.planet.tint = new Phaser.Display.Color().random(50).color;
-    this.planet.scaleX = 2.0;
-    this.planet.scaleY = 2.0;
-    this.planet.depth = 10;
-  }
-
-  updatePlanet() {
-    
-    if (this.planetState === 'traveling') {
-      this.planet.x -= this.PLANET_SPEED;
-      if (this.planet.x < 340) {
-        this.planetState = 'starting consumption';
-        this.splashEmitter.setEmitZone({
-          source: new Phaser.Geom.Line(340 - 64, 160, 340 - 64, Number(this.game.config.height) - 132),
-          type: 'random',
-          quantity: 100
-        }).explode(100, 0, 0);
-      }
-
-    } else if (this.planetState === 'starting consumption') {
-      this.planetMeltEmitter.start();
-      this.planetMeltEmitter.startFollow(this.planet);
-
-      this.planetMeltEmitter.setEmitZone({
-        source: new Phaser.Geom.Circle(0, 0, 64),
-        type: 'random',
-        quantity: 100})
-      this.planet.x -= this.PLANET_SPEED / 4;
-      this.planetState = 'getting consumed';
-
-    } else if (this.planetState === 'getting consumed') {
-      this.planet.x -= this.PLANET_SPEED / 4;
-      if (this.planet.x < 200) {
-        this.planetState = 'start melting';
-      }
-
-    } else if (this.planetState === 'start melting') {
-      this.tweens.add({
-        targets: this.planet,
-        scaleX: 0,
-        scaleY: 0,
-        alpha: 0,
-        duration: 2000,
-      });
-      this.planetState = 'melting';
-
-    } else if (this.planetState = 'melting') {
-      this.planetMeltEmitter.setEmitZone({
-        source: new Phaser.Geom.Circle(0, 0, 64 * this.planet.scaleX),
-        type: 'random',
-        quantity: 100
-      });
-      if (this.planet.scaleX === 0) {
-        this.planet.destroy();
-        this.planetMeltEmitter.stop();
-        this.planetState = 'done';
-      }
-    }    
   }
 
   checkCannons() {
@@ -367,6 +306,18 @@ export class GameScene extends Scene {
     this.sparkEmitter.explode(50, x, y)
   }
 
+  splashEffect(x1: number, y1: number, x2: number, y2: number) {
+    this.splashEmitter.setEmitZone({
+      source: new Phaser.Geom.Line(x1, y1, x2, y2),
+      type: 'random',
+      quantity: 100
+    }).explode(100, 0, 0);
+  }
+
+  getMeltEmitter() {
+    return this.planetMeltEmitter;
+  }
+
   update() {
 
     for (let i = 0; i < 10; i++) {
@@ -410,16 +361,17 @@ export class GameScene extends Scene {
     }
 
     if (this.currentState === this.STATE_PLANET && this.planet) {
+      this.planet.update();
       this.enemyCooldown -= this.sys.game.loop.delta;
-      this.updatePlanet();
       if (this.enemyCooldown < 0 ){
         this.enemyCooldown = 500;
         this.createEnemy('fighter');
         this.createEnemy('scout');
       }
-      if (this.planetState === 'done') {
+      if (this.planet.getState() === 'done') {
         this.elapsed = 0;
         this.currentState = this.STATE_SCOUTS;
+        this.planet.destroy();
       }
     }
 
