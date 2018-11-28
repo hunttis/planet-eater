@@ -10,5 +10,6 @@ export class EnemyAmmo extends GameObjects.Sprite {
     super(scene, x, y, 'missile', 0);
     this.scene = scene;
     this.direction = direction;
+    this.depth = 12;
   }
 }

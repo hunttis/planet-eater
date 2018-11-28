@@ -22,11 +22,9 @@ export class Effects {
     this.particles = this.scene.add.particles('star');
     this.bubbleparticles = this.scene.add.particles('bubbles');
     this.initEmitters();
-
   }
 
   initEmitters() {
-
     this.bubbleEmitter = this.bubbleparticles.createEmitter({
       lifespan: 2000,
       gravityX: -300, tint: 0x00aa00,

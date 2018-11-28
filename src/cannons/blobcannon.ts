@@ -28,9 +28,7 @@ export class BlobCannon extends Cannon {
 
   fire(): void {
     if (this.target != null && this.distanceToTarget() < this.range) {
-      console.log('close enough!');
       this.cooldown = 1000;
-
       const shot = new BlobAmmo(this.scene, this.x, this.y, this.target);
       this.ammo.add(shot, true);
       this.fireSound.play();

@@ -11,7 +11,6 @@ export class Planet extends GameObjects.Sprite {
   constructor(scene: GameScene, x: number, y: number, ) {
     super(scene, x, y, 'planet');
     this.scene = scene;
-    console.log('created');
     this.tint = new Phaser.Display.Color().random(50).color;
     this.scaleX = 2.0;
     this.scaleY = 2.0;

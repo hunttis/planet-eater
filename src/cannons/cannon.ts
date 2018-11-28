@@ -10,10 +10,8 @@ export class Cannon extends GameObjects.Sprite {
   targetEnemy(closestEnemy: Enemy, distance: number): any {
     if (this.target === null || !this.target.active) {
       this.target = closestEnemy;
-      console.log('Took target!');
     } else if (closestEnemy !== null && this.target !== closestEnemy && distance < this.distanceToTarget()) {
       this.target = closestEnemy;
-      console.log('Changed target!');
     }
   }
 

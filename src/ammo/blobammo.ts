@@ -17,7 +17,6 @@ export class BlobAmmo extends Ammo {
     const targetCenter = this.target.getCenter();
     
     const vectorToEnemy: Phaser.Math.Vector2 = new Phaser.Math.Vector2(myCenter.x - targetCenter.x, myCenter.y - targetCenter.y).normalize();
-
     this.x -= vectorToEnemy.x * this.speed;
     this.y -= vectorToEnemy.y * this.speed;
 
